@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment Checkout</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    >
+    <link rel="stylesheet" href="payment_gateway.css">
+</head>
+
+<body>
+
+    <div class="payment-container" id="mainBox">
+        <div class="header">
+            <h2>
+                <i class="fa-solid fa-shield-halved"></i>
+                Payments
+            </h2>
+
+            <div class="amount-box" id="displayAmt">₹0</div>
+        </div>
+
+        <div class="tabs">
+            <div
+                class="tab active"
+                id="tab-card"
+                onclick="switchTab('card')"
+            >
+                <i class="fa-solid fa-credit-card"></i>
+                Card
+            </div>
+
+            <div
+                class="tab"
+                id="tab-upi"
+                onclick="switchTab('upi')"
+            >
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                UPI
+            </div>
+        </div>
+
+        <div class="form-section">
+
+            <div id="card-form">
+                <div class="input-group">
+                    <label>Card Number</label>
+                    <input
+                        type="text"
+                        id="cardNumber"
+                        placeholder="XXXX XXXX XXXX XXXX"
+                        maxlength="19"
+                    >
+                </div>
+
+                <div class="row">
+                    <div class="input-group expiry-group">
+                        <label>Expiry Date</label>
+                        <input
+                            type="text"
+                            id="cardExp"
+                            placeholder="MM/YY"
+                            maxlength="5"
+                        >
+                    </div>
+
+                    <div class="input-group cvv-group">
+                        <label>CVV</label>
+                        <input
+                            type="password"
+                            id="cardCvv"
+                            placeholder="***"
+                            maxlength="3"
+                        >
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Card Holder Name</label>
+                    <input
+                        type="text"
+                        id="cardName"
+                        placeholder="Name on card"
+                    >
+                </div>
+            </div>
+
+            <div id="upi-form">
+                <div class="input-group">
+                    <label>Enter UPI ID</label>
+                    <input
+                        type="text"
+                        id="upiId"
+                        placeholder="username@bank"
+                    >
+                </div>
+
+                <p class="upi-info">
+                    A payment request will be sent to your UPI app.
+                </p>
+            </div>
+
+            <button
+                class="pay-btn"
+                id="payBtn"
+                onclick="validateAndPay()"
+            >
+                PAY SECURELY
+            </button>
+
+        </div>
+    </div>
+
+    <div class="payment-container processing" id="processing">
+        <div class="loader"></div>
+        <h3>Verifying Transaction...</h3>
+        <p>Please do not refresh or press back.</p>
+    </div>
+
+    <script>
+        let currentMode = "card";
+
+        const amount = localStorage.getItem("temp_total") || "0";
+        document.getElementById("displayAmt").innerText = "₹" + amount;
+
+        // Format card number
+        document
+            .getElementById("cardNumber")
+            .addEventListener("input", function (e) {
+                e.target.value = e.target.value
+                    .replace(/[^\d]/g, "")
+                    .replace(/(.{4})/g, "$1 ")
+                    .trim();
+            });
+
+        // Format expiry date
+        document
+            .getElementById("cardExp")
+            .addEventListener("input", function (e) {
+                let value = e.target.value.replace(/[^\d]/g, "");
+
+                if (value.length >= 2) {
+                    value =
+                        value.substring(0, 2) +
+                        "/" +
+                        value.substring(2);
+                }
+
+                e.target.value = value;
+            });
+
+        function switchTab(mode) {
+            currentMode = mode;
+
+            document
+                .getElementById("tab-card")
+                .classList.toggle("active", mode === "card");
+
+            document
+                .getElementById("tab-upi")
+                .classList.toggle("active", mode === "upi");
+
+            document.getElementById("card-form").style.display =
+                mode === "card" ? "block" : "none";
+
+            document.getElementById("upi-form").style.display =
+                mode === "upi" ? "block" : "none";
+        }
+
+        function validateAndPay() {
+            if (currentMode === "card") {
+                const number = document
+                    .getElementById("cardNumber")
+                    .value
+                    .replace(/\s/g, "");
+
+                const expiry = document.getElementById("cardExp").value;
+                const cvv = document.getElementById("cardCvv").value;
+                const name = document.getElementById("cardName").value;
+
+                if (number.length < 16) {
+                    return alert("Invalid Card Number!");
+                }
+
+                if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                    return alert("Invalid Expiry (MM/YY)!");
+                }
+
+                if (cvv.length < 3) {
+                    return alert("Invalid CVV!");
+                }
+
+                if (name.length < 3) {
+                    return alert("Enter Card Holder Name!");
+                }
+            } else {
+                const upi = document.getElementById("upiId").value;
+
+                if (!upi.includes("@") || upi.length < 5) {
+                    return alert("Please enter a valid UPI ID!");
+                }
+            }
+
+            processPayment();
+        }
+
+        function processPayment() {
+            document.getElementById("mainBox").style.display = "none";
+            document.getElementById("processing").style.display = "block";
+
+            const orderData = JSON.parse(
+                localStorage.getItem("pending_order")
+            );
+
+            setTimeout(() => {
+                fetch("placeOrder.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(orderData)
+                })
+                .then(res => res.text())
+                .then(orderId => {
+                    localStorage.setItem("lastOrderId", orderId);
+                    localStorage.removeItem("pending_order");
+                    localStorage.removeItem("cart");
+                    localStorage.removeItem("buyNow");
+
+                    window.location.href = "success.html";
+                })
+                .catch(err => {
+                    alert("Server Error! Try again.");
+                    location.reload();
+                });
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

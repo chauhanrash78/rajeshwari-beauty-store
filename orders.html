@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .orders-container {
+            padding: 20px;
+        }
+
+        .order-card {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-card img {
+            width: 120px;
+            border-radius: 8px;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #ff3f6c;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>My Orders</h2>
+
+    <div id="orders" class="orders-container"></div>
+
+    <script>
+        let user = localStorage.getItem("user");
+
+        // Login check
+        if (!user) {
+            alert("Please login first");
+            window.location.href = "login.html";
+        }
+
+        // Fetch orders
+        fetch("getOrders.php?email=" + user)
+            .then(res => res.json())
+            .then(data => {
+                let html = "";
+
+                if (data.length === 0) {
+                    html = "<h3 style='text-align:center;'>No Orders Found</h3>";
+                } else {
+                    data.forEach(o => {
+                        let imgPath = o.image;
+
+                        if (imgPath && !imgPath.startsWith("images/")) {
+                            imgPath = "images/" + imgPath;
+                        }
+
+                        let price = Number(o.price) || 0;
+                        let qty = Number(o.quantity) || 1;
+                        let total = price * qty;
+
+                        let color = "orange";
+
+                        if (o.status === "Delivered") {
+                            color = "green";
+                        }
+
+                        if (o.status === "Cancelled") {
+                            color = "red";
+                        }
+
+                        html += `
+                            <div class="order-card">
+
+                                <img
+                                    src="${imgPath}"
+                                    alt="${o.name}"
+                                    onerror="this.src='images/no-image.png'"
+                                >
+
+                                <div class="order-info">
+                                    <h3>${o.name}</h3>
+
+                                    <p>Price: ₹${price}</p>
+                                    <p>Quantity: ${qty}</p>
+                                    <p><b>Total: ₹${total}</b></p>
+
+                                    <p>
+                                        <b>Payment:</b> ${o.payment || "COD"}
+                                    </p>
+
+                                    <p class="status">
+                                        Status:
+                                        <span style="color:${color}">
+                                            ${o.status || "Pending"}
+                                        </span>
+                                    </p>
+
+                                    <p>${o.address}</p>
+                                    <p>${o.created_at}</p>
+
+                                    <!-- Track order -->
+                                    <button onclick="trackOrder('${o.order_id}')">
+                                        Track Order
+                                    </button>
+
+                                    <!-- Cancel order -->
+                                    ${
+                                        (o.status === "Pending" || o.status === "Confirmed")
+                                            ? `<button onclick="cancelOrder('${o.order_id}')">
+                                                Cancel Order
+                                               </button>`
+                                            : `<button disabled>
+                                                ${o.status === "Cancelled" ? "Cancelled" : "Cannot Cancel"}
+                                               </button>`
+                                    }
+
+                                </div>
+
+                            </div>
+                        `;
+                    });
+                }
+
+                document.getElementById("orders").innerHTML = html;
+            });
+
+        function trackOrder(order_id) {
+            window.location.href = "trackOrder.html?order_id=" + order_id;
+        }
+
+        function cancelOrder(order_id) {
+            if (!confirm("Are you sure you want to cancel this order?")) {
+                return;
+            }
+
+            fetch("cancelOrder.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    order_id: order_id
+                })
+            })
+            .then(res => res.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            });
+        }
+    </script>
+
+</body>
+</html>

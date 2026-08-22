@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f4f7;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.success-box {
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 380px;
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.icon-circle span {
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+h1 {
+    color: #2e7d32;
+    margin: 0;
+    font-size: 24px;
+}
+
+p {
+    color: #666;
+    margin: 10px 0 25px;
+}
+
+.id-label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.order-id-display {
+    background: #f9f9f9;
+    border: 1px dashed #ff3f6c;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff3f6c;
+    margin-bottom: 25px;
+}
+
+.btn {
+    padding: 15px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #ff3f6c;
+    color: white;
+}
+
+.btn-secondary {
+    background: #282c3f;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}

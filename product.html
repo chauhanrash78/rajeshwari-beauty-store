@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="product-page">
+
+        <div class="product-image">
+            <img id="productImg" alt="Product Image">
+        </div>
+
+        <div class="product-details">
+            <h2 id="productName"></h2>
+
+            <p id="productBrand"></p>
+            <p id="productCategory"></p>
+
+            <h3 id="productPrice"></h3>
+
+            <input
+                type="number"
+                id="qty"
+                value="1"
+                min="1"
+            >
+
+            <button onclick="addToCartProduct()">Add to Cart</button>
+            <button onclick="buyNow()">Buy Now</button>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h3 style="margin-left: 20px;">Related Products</h3>
+
+    <div id="relatedProducts" class="related-grid"></div>
+
+    <script src="product.js"></script>
+
+</body>
+</html>

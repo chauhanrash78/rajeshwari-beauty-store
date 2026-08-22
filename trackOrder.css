@@ -1,0 +1,161 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    padding: 20px;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    color: #1a1a1a;
+}
+
+/* Search bar */
+.search-box {
+    max-width: 500px;
+    margin: 0 auto 30px;
+    display: flex;
+    background: #fff;
+    padding: 5px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#searchInput {
+    flex: 1;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    outline: none;
+    font-size: 15px;
+}
+
+.search-box button {
+    padding: 10px 25px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.order-box {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.order-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.order-id-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.order-time {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.product-list {
+    margin: 15px 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.product-list li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 14px;
+}
+
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    position: relative;
+}
+
+.step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+
+.circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: auto;
+    background: #ddd;
+    border: 3px solid #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+}
+
+.is-pending .active .circle {
+    background: #f1c40f !important;
+}
+
+.is-pending .status-text {
+    color: #f1c40f;
+    font-weight: bold;
+}
+
+/* Cancelled status */
+.is-cancelled .active .circle {
+    background: #e74c3c !important;
+}
+
+.is-cancelled .status-text {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Delivered status */
+.is-delivered .active .circle {
+    background: #27ae60 !important;
+}
+
+.is-delivered .status-text {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.is-confirmed .active .circle,
+.is-shipped .active .circle {
+    background: #2ecc71;
+}
+
+.step p {
+    font-size: 12px;
+    margin-top: 8px;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.active p {
+    color: #333;
+}
+
+.hidden {
+    display: none;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}

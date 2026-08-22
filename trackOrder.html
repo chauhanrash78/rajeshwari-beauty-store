@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Orders</title>
+    <link rel="stylesheet" href="trackOrder.css">
+</head>
+
+<body>
+
+    <h2>My Orders</h2>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by Order ID..."
+            onkeyup="searchOrder()"
+        >
+        <button onclick="searchOrder()">Track</button>
+    </div>
+
+    <div id="orders"></div>
+
+    <script>
+        let user = localStorage.getItem("user");
+
+        if (!user) {
+            alert("Please login first");
+            window.location.href = "login.html";
+        }
+
+        // Fetch orders
+        fetch("getOrders.php?email=" + encodeURIComponent(user))
+            .then(res => res.json())
+            .then(data => {
+                if (!data || data.length === 0) {
+                    document.getElementById("orders").innerHTML =
+                        "<div class='no-data'>No orders found in your account.</div>";
+                    return;
+                }
+
+                let grouped = {};
+
+                data.forEach(o => {
+                    if (!grouped[o.order_id]) {
+                        grouped[o.order_id] = [];
+                    }
+
+                    grouped[o.order_id].push(o);
+                });
+
+                renderOrders(grouped);
+            });
+
+        function renderOrders(groupedData) {
+            let html = "";
+
+            Object.keys(groupedData).forEach(orderId => {
+                let orders = groupedData[orderId];
+                let status = orders[0].status;
+
+                let date =
+                    orders[0].order_date ||
+                    orders[0].date ||
+                    orders[0].created_at ||
+                    "Date not available";
+
+                let statusClass = "is-" + status.toLowerCase();
+
+                html += `
+                    <div class="order-box ${statusClass}" id="order-${orderId}">
+                        <div class="order-info">
+                            <div>
+                                <div class="order-id-label">Order ID: ${orderId}</div>
+                                <div class="order-time">Placed on: ${date}</div>
+                            </div>
+
+                            <div class="status-text">${status}</div>
+                        </div>
+
+                        <ul class="product-list">
+                            ${orders.map(o => `
+                                <li>
+                                    ${o.name}
+                                    <span style="float:right">Qty: ${o.quantity}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+
+                        <div class="timeline">
+                            <div class="step ${statusCheck(status, 'Pending')}">
+                                <div class="circle"></div>
+                                <p>Placed</p>
+                            </div>
+
+                            <div class="step ${statusCheck(status, 'Confirmed')}">
+                                <div class="circle"></div>
+                                <p>Confirmed</p>
+                            </div>
+
+                            <div class="step ${statusCheck(status, 'Shipped')}">
+                                <div class="circle"></div>
+                                <p>Shipped</p>
+                            </div>
+
+                            <div class="step ${statusCheck(status, 'Delivered')}">
+                                <div class="circle"></div>
+                                <p>Delivered</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("orders").innerHTML = html;
+        }
+
+        // Search orders
+        function searchOrder() {
+            let input = document
+                .getElementById("searchInput")
+                .value
+                .trim()
+                .toLowerCase();
+
+            let allBoxes = document.querySelectorAll(".order-box");
+
+            allBoxes.forEach(box => {
+                if (box.id.toLowerCase().includes(input)) {
+                    box.style.display = "block";
+                } else {
+                    box.style.display = "none";
+                }
+            });
+        }
+
+        function statusCheck(current, step) {
+            let steps = ["Pending", "Confirmed", "Shipped", "Delivered"];
+
+            if (current === "Cancelled") {
+                return "active";
+            }
+
+            let currentIndex = steps.indexOf(current);
+            let stepIndex = steps.indexOf(step);
+
+            return stepIndex <= currentIndex ? "active" : "";
+        }
+    </script>
+
+</body>
+</html>

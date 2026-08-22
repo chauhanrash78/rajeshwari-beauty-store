@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h2 class="cart-title">My Cart</h2>
+
+    <div class="cart-container">
+
+        <div id="cartItems" class="cart-items"></div>
+
+        <div class="cart-summary" id="cartSummary">
+            <h3>Price Details</h3>
+            <h2 id="grandTotal">₹0</h2>
+
+            <p class="delivery-text">🚚 Free Delivery</p>
+
+            <button
+                class="checkout-btn"
+                onclick="goToCheckout()"
+            >
+                Proceed to Checkout
+            </button>
+        </div>
+
+    </div>
+
+    <script src="cart.js"></script>
+
+</body>
+</html>

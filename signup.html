@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff0f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 20, 147, 0.15);
+            width: 350px;
+            text-align: center;
+            border: 1px solid #ffe4e8;
+        }
+
+        h2 {
+            color: #ff1493;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 2px solid #ffe4e8;
+            border-radius: 10px;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #ff1493;
+            box-shadow: 0 0 8px rgba(255, 20, 147, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background-color: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff69b4;
+            transform: translateY(-2px);
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        a {
+            color: #ff1493;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="form-box">
+    <h2>Create Account</h2>
+
+    <input
+        type="text"
+        id="name"
+        placeholder="Full Name"
+        autocomplete="off"
+    >
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Email Address"
+        autocomplete="off"
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        autocomplete="new-password"
+    >
+
+    <button onclick="signup()">Sign Up</button>
+
+    <p>
+        Have an account?
+        <a href="login.html">Login</a>
+    </p>
+</div>
+
+<script>
+function signup() {
+    let name = document.getElementById("name").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+
+    if (name === "" || email === "" || password === "") {
+        alert("All fields are required");
+        return;
+    }
+
+    fetch("signup.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+        })
+    })
+    .then(res => res.text())
+    .then(data => {
+        let result = data.trim();
+
+        if (result === "Signup Successful") {
+            alert("Signup Successful!");
+            window.location.href = "login.html";
+        } 
+        else if (result === "Email already exists") {
+            alert("Email already exists!");
+            location.reload();
+        } 
+        else {
+            alert("Signup Failed");
+        }
+    });
+}
+</script>
+
+</body>
+</html>

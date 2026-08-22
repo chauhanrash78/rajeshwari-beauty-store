@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Premium Lakmé Store</title>
+    <link rel="stylesheet" href="checkout.css">
+</head>
+
+<body>
+
+<div class="header">
+    <h1>CHECKOUT</h1>
+</div>
+
+<div class="checkout-container">
+
+    <div class="left-section">
+
+        <div class="card">
+            <h3>Items in your order</h3>
+            <div id="leftBox"></div>
+        </div>
+
+        <div class="card">
+            <h3>Delivery Details</h3>
+
+            <div class="input-group">
+                <label class="field-label">FULL NAME</label>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                >
+            </div>
+
+            <div class="input-group">
+                <label class="field-label">COMPLETE ADDRESS</label>
+                <input
+                    type="text"
+                    id="address"
+                    placeholder="Flat, House no, Building, Area"
+                >
+            </div>
+
+            <div class="input-group">
+                <label class="field-label">PHONE NUMBER</label>
+                <input
+                    type="text"
+                    id="phone"
+                    placeholder="10-digit mobile number"
+                >
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Select Payment Method</h3>
+
+            <label class="payment-option">
+                <input
+                    type="radio"
+                    name="payment"
+                    value="COD"
+                    checked
+                >
+                <span class="label-text">
+                    Cash on Delivery (COD)
+                </span>
+            </label>
+
+            <label class="payment-option">
+                <input
+                    type="radio"
+                    name="payment"
+                    value="UPI"
+                >
+                <span class="label-text">
+                    UPI (Google Pay, PhonePe, Paytm)
+                </span>
+            </label>
+
+            <label class="payment-option">
+                <input
+                    type="radio"
+                    name="payment"
+                    value="Card"
+                >
+                <span class="label-text">
+                    Credit / Debit Card
+                </span>
+            </label>
+        </div>
+
+    </div>
+
+    <div class="right-section">
+        <div class="summary-card">
+            <h3>Order Summary</h3>
+
+            <div id="summaryBox"></div>
+
+            <div class="total-row">
+                <span>Total Amount</span>
+                <span id="totalPrice">₹0</span>
+            </div>
+
+            <button
+                class="place-order-btn"
+                onclick="placeOrder()"
+            >
+                Place Order
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let user = localStorage.getItem("user");
+    let raw = localStorage.getItem("buyNow");
+
+    if (!user || !raw) {
+        window.location.href = "cart.html";
+    }
+
+    let orders = JSON.parse(raw);
+
+    if (!Array.isArray(orders)) {
+        orders = [orders];
+    }
+
+    // Load products
+    fetch("getProducts.php")
+        .then(res => res.json())
+        .then(products => {
+            let leftHTML = "";
+            let summaryHTML = "";
+            let total = 0;
+
+            orders.forEach(o => {
+                let p = products.find(item => item.id == o.id);
+
+                if (p) {
+                    let subtotal = p.price * o.qty;
+                    total += subtotal;
+
+                    leftHTML += `
+                        <div class="product-box">
+                            <img
+                                src="${p.image}"
+                                alt="${p.name}"
+                            >
+
+                            <div>
+                                <h4>${p.name}</h4>
+                                <p class="product-meta">
+                                    Qty: ${o.qty} | ₹${p.price}
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr class="product-divider">
+                    `;
+
+                    summaryHTML += `
+                        <div class="summary-item">
+                            <span>${p.name} (x${o.qty})</span>
+                            <span>₹${subtotal}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById("leftBox").innerHTML = leftHTML;
+            document.getElementById("summaryBox").innerHTML = summaryHTML;
+            document.getElementById("totalPrice").innerText = "₹" + total;
+        });
+
+    function placeOrder() {
+        let name = document.getElementById("name").value.trim();
+        let address = document.getElementById("address").value.trim();
+        let phone = document.getElementById("phone").value.trim();
+        let payment = document.querySelector(
+            'input[name="payment"]:checked'
+        ).value;
+
+        if (name === "" || address === "" || phone === "") {
+            alert("⚠️ Please fill all delivery details before placing order!");
+            return;
+        }
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+            alert("⚠️ Enter a valid 10-digit phone number!");
+            return;
+        }
+
+        let orderData = {
+            email: user,
+            orders: orders,
+            address: address,
+            payment: payment
+        };
+
+        // Payment flow
+        if (payment === "COD") {
+            fetch("placeOrder.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(res => res.text())
+            .then(data => {
+                alert("Order Placed Successfully ✅");
+
+                localStorage.removeItem("cart");
+                localStorage.removeItem("buyNow");
+
+                window.location.href = "success.html";
+            });
+        } else {
+            localStorage.setItem(
+                "pending_order",
+                JSON.stringify(orderData)
+            );
+
+            let totalValue = document
+                .getElementById("totalPrice")
+                .innerText
+                .replace(/[^0-9]/g, "");
+
+            localStorage.setItem("temp_total", totalValue);
+
+            alert("Redirecting to Secure Payment Gateway...");
+            window.location.href = "payment_gateway.html";
+        }
+    }
+</script>
+
+</body>
+</html>

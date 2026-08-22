@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success | Premium Store</title>
+    <link rel="stylesheet" href="success.css">
+</head>
+
+<body>
+
+    <div class="success-box">
+        <div class="icon-circle">
+            <span>✓</span>
+        </div>
+
+        <h1>Order Placed!</h1>
+        <p>Your order will be delivered soon 🚚</p>
+
+        <div class="id-label">Order ID</div>
+        <div class="order-id-display" id="orderIdBox">Loading...</div>
+
+        <button
+            class="btn btn-primary"
+            onclick="location.href='orders.html'">
+            View My Orders
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="location.href='shop.php'">
+            Continue Shopping
+        </button>
+    </div>
+
+    <script>
+        // Get the latest order ID
+        let rawId = localStorage.getItem("lastOrderId") || "Not Available";
+
+        let cleanMatch = rawId.match(/ORD\d+/);
+        let finalId = cleanMatch ? cleanMatch[0] : rawId;
+
+        document.getElementById("orderIdBox").innerText = finalId;
+    </script>
+
+</body>
+</html>

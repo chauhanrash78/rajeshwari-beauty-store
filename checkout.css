@@ -1,0 +1,198 @@
+:root {
+    --primary-color: #ff3f6c;
+    --blue-accent: #2196F3;
+    --bg-color: #f4f4f7;
+    --text-dark: #282c3f;
+    --border-color: #eaeaec;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.header {
+    background: #fff;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+}
+
+.checkout-container {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.left-section {
+    flex: 7;
+}
+
+.right-section {
+    flex: 3;
+}
+
+.card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+h3 {
+    margin-top: 0;
+    font-size: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 0;
+}
+
+.product-box img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.product-meta {
+    margin: 5px 0;
+    color: #696e79;
+}
+
+.product-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #94969f;
+    border-radius: 50%;
+    margin-right: 15px;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.payment-option input[type="radio"]:checked::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: var(--blue-accent);
+    border-radius: 50%;
+    display: block;
+}
+
+.payment-option:has(input:checked) {
+    border-color: var(--blue-accent);
+    background-color: #f0f7ff;
+}
+
+.label-text {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #535766;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline-color: var(--blue-accent);
+}
+
+.summary-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid var(--bg-color);
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.place-order-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: opacity 0.3s;
+}
+
+.place-order-btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+    .checkout-container {
+        flex-direction: column;
+    }
+}

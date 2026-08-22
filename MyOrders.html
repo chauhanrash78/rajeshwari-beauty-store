@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Lakmé Premium</title>
+    <link rel="stylesheet" href="MyOrders.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Mera Orders</h2>
+    <div id="orders"></div>
+</div>
+
+<script>
+    let user = localStorage.getItem("user");
+
+    if (!user) {
+        window.location.href = "login.html";
+    }
+
+    // Fetch orders
+    fetch("getOrders.php?email=" + user)
+        .then(res => res.json())
+        .then(data => {
+            let html = "";
+
+            if (data.length === 0) {
+                html = `
+                    <div class="empty-orders">
+                        <h3>Koi order nahi mila!</h3>
+                        <p>Abhi shopping karein.</p>
+                    </div>
+                `;
+            } else {
+                let grouped = {};
+
+                data.forEach(item => {
+                    if (!grouped[item.order_id]) {
+                        grouped[item.order_id] = [];
+                    }
+
+                    grouped[item.order_id].push(item);
+                });
+
+                Object.keys(grouped).forEach(orderId => {
+                    let items = grouped[orderId];
+                    let firstItem = items[0];
+
+                    html += `
+                        <div class="order-box">
+                            <div class="order-header">
+                                <span class="order-id">
+                                    Order ID: ${orderId}
+                                </span>
+
+                                <span
+                                    class="status-badge"
+                                    style="background:${getBg(firstItem.status)}; color:${getColor(firstItem.status)}"
+                                >
+                                    ${firstItem.status}
+                                </span>
+                            </div>
+
+                            ${items.map(p => `
+                                <div class="product">
+                                    <img
+                                        src="images/${p.image}"
+                                        alt="${p.name}"
+                                        onerror="this.src='images/no-image.png'"
+                                    >
+
+                                    <div class="product-info">
+                                        <h4>${p.name}</h4>
+                                        <p>Price: ₹${p.price}</p>
+                                        <p>Quantity: ${p.quantity}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+
+                            <div class="btn-group">
+                                <button
+                                    class="btn-track"
+                                    onclick="trackOrder('${orderId}')"
+                                >
+                                    Track Order
+                                </button>
+
+                                ${
+                                    (firstItem.status === "Pending" ||
+                                    firstItem.status === "Confirmed")
+                                        ? `<button
+                                            class="btn-cancel"
+                                            onclick="cancelOrder('${orderId}')"
+                                           >
+                                            Cancel Order
+                                           </button>`
+                                        : `<button disabled>
+                                            ${
+                                                firstItem.status === "Cancelled"
+                                                    ? "Cancelled"
+                                                    : "Cant Cancel"
+                                            }
+                                           </button>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById("orders").innerHTML = html;
+        });
+
+    function trackOrder(order_id) {
+        window.location.href = "trackOrder.html?order_id=" + order_id;
+    }
+
+    function cancelOrder(order_id) {
+        if (!confirm("Order cancel karna chahte hain?")) {
+            return;
+        }
+
+        fetch("cancelOrder.php?order_id=" + order_id)
+            .then(res => res.text())
+            .then(msg => {
+                alert(msg);
+                location.reload();
+            });
+    }
+
+    function getColor(status) {
+        if (status === "Pending") return "#d35400";
+        if (status === "Shipped") return "#2980b9";
+        if (status === "Delivered") return "#27ae60";
+        if (status === "Cancelled") return "#c0392b";
+
+        return "#333";
+    }
+
+    function getBg(status) {
+        if (status === "Pending") return "#fef5e7";
+        if (status === "Shipped") return "#ebf5fb";
+        if (status === "Delivered") return "#eafaf1";
+        if (status === "Cancelled") return "#fdedec";
+
+        return "#f4f4f4";
+    }
+</script>
+
+</body>
+</html>
